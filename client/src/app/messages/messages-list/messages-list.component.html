@@ -1,0 +1,19 @@
+<ul class="messages-list">
+  <li *ngFor="let message of messages">
+    <mat-card>
+      <mat-card-header>
+        <!-- {{message.authorAvatar}} -->
+        <img mat-card-avatar src="https://material.angular.io/assets/img/examples/shiba1.jpg">
+        <mat-card-title>{{message.authorName}}</mat-card-title>
+        <mat-card-subtitle>{{message.authorIsAdmin ? 'admin' : ''}}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div>AuthorID: {{message.from}}</div>
+        <div>{{message.text}}</div>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button>Like</button>
+      </mat-card-actions>
+    </mat-card>
+  </li>
+</ul>

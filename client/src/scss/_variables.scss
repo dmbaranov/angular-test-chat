@@ -1,0 +1,16 @@
+// @import '~@angular/material/theming';
+
+// @mixin set-theme-background($theme) {
+//   $primary: map-get($theme, primary);
+//   $accent: map-get($theme, accent);
+
+//   background: $primary;
+// }
+
+@import '~@angular/material/theming';
+
+$app-main: mat-palette($mat-indigo);
+$app-white: mat-palette($mat-grey, A100);
+
+$main-color: mat-color($app-main);
+$white-color: mat-color($app-white);

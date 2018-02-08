@@ -1,0 +1,7 @@
+<form [formGroup]="messageForm" (ngSubmit)="onMessageFormSubmit(messageForm.value)">
+  <mat-form-field>
+    <input type="text" matInput formControlName="message" placeholder="Message">
+  </mat-form-field>
+
+  <button type="submit" mat-button>Send</button>
+</form>
