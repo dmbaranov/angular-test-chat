@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { UsersService } from '@services/users.service';
 import { IUser } from '@models/user.model';
@@ -18,12 +18,16 @@ export class UsersComponent implements OnInit {
   constructor(private usersService: UsersService, public dialog: MatDialog) {}
 
   ngOnInit() {
-    this.usersService
-      .getAllUsers()
-      .pipe(map(users => Object.values(users)))
-      .subscribe((usersOnline: IUser[]) => (this.usersOnline = usersOnline));
+    this.usersService.getAllUsers().subscribe((users: IUser[]) => (this.usersOnline = users));
+    // this.usersService
+    //   .getAllUsers()
+    //   .pipe(map(users => Object.values(users)))
+    //   .subscribe((usersOnline: IUser[]) => (this.usersOnline = usersOnline));
 
-    this.usersService.getCurrentUser().subscribe((user: IUser) => (this.currentUser = user));
+    this.usersService.getCurrentUser().subscribe((user: IUser) => {
+      console.log('updating user', user);
+      this.currentUser = user;
+    });
   }
 
   makeLogin(): void {
@@ -33,5 +37,12 @@ export class UsersComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((userData: object) => this.usersService.createUser(userData));
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  makeLogout() {
+    if (this.currentUser) {
+      this.usersService.userLeaves(this.currentUser.id);
+    }
   }
 }
