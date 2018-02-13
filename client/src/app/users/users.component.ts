@@ -11,7 +11,7 @@ import { LoginDialogComponent } from './login-dialog/login-dialog.component';
   styleUrls: ['./users.component.scss']
 })
 export class UsersComponent implements OnInit {
-  username: string;
+  formUsername: string;
   usersOnline: IUser[] = [];
   currentUser: IUser;
 
@@ -19,24 +19,22 @@ export class UsersComponent implements OnInit {
 
   ngOnInit() {
     this.usersService.getAllUsers().subscribe((users: IUser[]) => (this.usersOnline = users));
-    // this.usersService
-    //   .getAllUsers()
-    //   .pipe(map(users => Object.values(users)))
-    //   .subscribe((usersOnline: IUser[]) => (this.usersOnline = usersOnline));
 
     this.usersService.getCurrentUser().subscribe((user: IUser) => {
-      console.log('updating user', user);
       this.currentUser = user;
     });
   }
 
   makeLogin(): void {
     const dialogRef = this.dialog.open(LoginDialogComponent, {
-      width: '250px',
-      data: { username: this.username }
+      width: '250px'
     });
 
-    dialogRef.afterClosed().subscribe((userData: object) => this.usersService.createUser(userData));
+    dialogRef.afterClosed().subscribe((userData: object) => {
+      if (userData) {
+        this.usersService.createUser(userData);
+      }
+    });
   }
 
   @HostListener('window:beforeunload', ['$event'])

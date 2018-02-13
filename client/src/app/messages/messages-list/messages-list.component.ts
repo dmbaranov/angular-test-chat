@@ -1,19 +1,19 @@
-import { Component, OnInit } from '@angular/core';
-import { MessagesService } from '@services/messages.service';
+import { Component, OnInit, AfterViewChecked, Input, ElementRef } from '@angular/core';
 import { IMessage } from '@models/message.model';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-messages-list',
   templateUrl: './messages-list.component.html',
   styleUrls: ['./messages-list.component.scss']
 })
-export class MessagesListComponent implements OnInit {
-  messages: IMessage[] = [];
+export class MessagesListComponent implements OnInit, AfterViewChecked {
+  @Input() messages: IMessage[] = [];
 
-  constructor(private messagesService: MessagesService) {}
+  constructor(private el: ElementRef) {}
 
-  ngOnInit(): void {
-    this.messagesService.getMessages().subscribe(messages => (this.messages = messages));
+  ngOnInit() {}
+
+  ngAfterViewChecked() {
+    this.el.nativeElement.querySelector('.messages-list').scrollIntoView(false);
   }
 }

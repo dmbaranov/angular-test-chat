@@ -1,0 +1,28 @@
+:host {
+  width: 100%;
+  display: inline-block;
+  text-align: left;
+  border-bottom: 1px solid #cacaca3b;
+}
+
+.user {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.user-avatar {
+  margin: 10px 15px;
+  display: flex;
+  width: 25px;
+  height: 25px;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  border-radius: 50%;
+}
+
+.user-admin {
+  margin-left: 15px;
+  color: rgba(0, 0, 0, 0.54);
+}

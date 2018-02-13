@@ -1,5 +1,7 @@
 :host {
   display: block;
+  height: 500px;
+  overflow: scroll;
 }
 
 .messages-list {
@@ -7,4 +9,11 @@
   padding: 0;
   width: 100%;
   list-style-type: none;
+}
+
+.message-avatar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
 }

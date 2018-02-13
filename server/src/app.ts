@@ -1,57 +1,43 @@
 import * as uuidv1 from 'uuid/v1';
-import { IUser, IUserList } from './models/user.model';
 import * as Socket from 'socket.io';
+import { IUser, IUserList } from './models/user.model';
+import { IMessage } from './models/message.model';
+import { COLORS } from './colors';
 
 const app = require('express')();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
-// io.on('connection', socket => {
-//   let interval = null;
-//   console.log('user connected');
-//   socket.join('timer');
-
-//   socket.on('disconnect', function() {
-//     console.log('user disconnected');
-//     clearInterval(interval);
-//   });
-
-//   socket.on('message', message => {
-//     console.log('Message Received: ' + message);
-//     io.emit('message', { type: 'new-message', text: message });
-//   });
-
-//   setInterval(() => {
-//     console.log('Emitting...');
-//     io.emit('messages', 'Test message from socket server');
-//   }, 3000);
-// });
-
 const userList: IUserList = {}; // Because we don't have db, we store it as a global variable..
+const messagesList: IMessage[] = [];
 
 io.on('connection', (socket: any) => {
   console.log('user connected');
 
-  socket.on('disconnect', data => {
-    console.log('user disconnected', data);
+  socket.on('disconnect', () => {
+    console.log('user disconnected');
   });
 
-  socket.on('users/create', data => {
+  socket.on('users', () => {
+    // TODO: if doesn't work, make io.emit('users', userList)
+    console.log('Sending list of users...');
+    socket.emit('users', userList);
+  });
+
+  socket.on('users/create', (data: any) => {
     console.log(`Creating new user`, data);
 
+    const colorIndex = Math.floor(Math.random() * COLORS.length);
     const uid: string = uuidv1();
     const newUser: IUser = {
       id: uid,
-      username: data.username
+      username: data.username.startsWith('[admin]') ? data.username.slice(7) : data.username,
+      isAdmin: data.username.startsWith('[admin]'),
+      avatar: COLORS[colorIndex]
     };
 
     userList[uid] = newUser;
     socket.emit('users/create', { ...newUser });
-    io.emit('users', userList);
-  });
-
-  socket.on('users', () => {
-    console.log('Sending list of users...');
     io.emit('users', userList);
   });
 
@@ -60,25 +46,19 @@ io.on('connection', (socket: any) => {
     delete userList[uid];
     io.emit('users', userList);
   });
+
+  socket.on('messages', () => {
+    console.log('Sending list of messages...');
+    socket.emit('messages', messagesList);
+  });
+
+  socket.on('messages/create', (msg: any) => {
+    console.log('Adding new message...', msg);
+    messagesList.push(msg);
+    // socket.emit('messages/create', msg);
+    io.emit('messages', messagesList);
+  });
 });
-
-// io.on('users/create', (data: IUser) => {
-// console.log(`Creating new user`, data);
-
-// socket.emit('users/create', {
-
-// });
-// const uid: string = uuidv1();
-// const newUser: IUser = {
-//   id: uid,
-//   username: data.username
-// };
-
-// userList[uid] = newUser;
-//   socket.emit('users/create', {
-
-// });
-// });
 
 export default http;
 

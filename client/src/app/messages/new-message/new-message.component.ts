@@ -18,7 +18,10 @@ export class NewMessageComponent implements OnInit {
 
   ngOnInit() {}
 
-  onMessageFormSubmit(msg: string): void {
-    this.sendMessage.emit(msg);
+  onMessageFormSubmit(msg: any): void {
+    if (msg.message.length) {
+      this.sendMessage.emit(msg.message);
+      this.messageForm.controls['message'].setValue('');
+    }
   }
 }

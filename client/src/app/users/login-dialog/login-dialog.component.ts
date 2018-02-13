@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialogRef } from '@angular/material';
 
 @Component({
   selector: 'app-login-dialog',
@@ -10,11 +10,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 export class LoginDialogComponent implements OnInit {
   userLoginForm: FormGroup;
 
-  constructor(
-    public dialogRef: MatDialogRef<LoginDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any,
-    private fb: FormBuilder
-  ) {
+  constructor(public dialogRef: MatDialogRef<LoginDialogComponent>, private fb: FormBuilder) {
     this.userLoginForm = fb.group({
       username: ''
     });

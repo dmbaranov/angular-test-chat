@@ -1,50 +1,56 @@
 import { Injectable } from '@angular/core';
 import { IMessage } from '@models/message.model';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { UsersService } from './users.service';
-import { WebsocketService } from './websocket.service';
-
-const testMessages: IMessage[] = [
-  {
-    id: 'qwe1',
-    from: 'from1',
-    text: 'text1',
-    authorIsAdmin: true
-  },
-  {
-    id: 'qwe2',
-    from: 'from2',
-    text: 'text2',
-    authorIsAdmin: false
-  }
-];
+import { IUser } from '@models/user.model';
+import { UsersService } from '@services/users.service';
+import { WebsocketService } from '@services/websocket.service';
+import { Observable, Subject, BehaviorSubject } from 'rxjs';
+import { map, filter, takeWhile } from 'rxjs/operators';
 
 @Injectable()
 export class MessagesService {
-  private _messagesList: IMessage[] = testMessages;
+  private _messagesList: IMessage[] = [];
+  private _currentUser: IUser;
   messages$: BehaviorSubject<IMessage[]> = new BehaviorSubject(this._messagesList);
 
-  constructor(private userService: UsersService, private websocket: WebsocketService) {
-    // websocket.subscribeToSocket('messages').subscribe((message: IMessage) => {
-    //   this._messagesList.push(message);
-    //   this.messages$.next(this._messagesList);
-    // });
-    // this.websocket.subscribeToSocket('messages').subscribe(data => {
-    //   console.log('Received websocket data', data);
-    // });
+  constructor(private userService: UsersService, private websocketService: WebsocketService) {}
+
+  _getCurrentUser(): Observable<any> {
+    if (this._currentUser) {
+      return Observable.of(null);
+    }
+
+    return Observable.create(() => {
+      this.userService.getCurrentUser().subscribe(user => {
+        console.log('User received');
+        this._currentUser = user;
+      });
+    });
   }
 
   sendMessage(msg: IMessage): void {
-    let currentUser;
-    this.userService.getCurrentUser().subscribe(user => {
-      currentUser = user;
-      console.log(currentUser, msg);
+    const createMessage = (user: IUser) => ({
+      ...msg,
+      from: user
     });
-    this._messagesList.push(msg);
-    this.messages$.next(this._messagesList);
+
+    this.userService
+      .getCurrentUser()
+      .pipe(
+        takeWhile((user: IUser) => user !== null),
+        map((user: IUser) => createMessage(user)),
+        map((msg: IMessage) => this.websocketService.sendMessage('messages/create', msg))
+      )
+      .subscribe();
+
+    this.websocketService.subscribeToSocketOnce('messages/create').subscribe((msg: IMessage) => {
+      this._messagesList.push(msg);
+      this.messages$.next(this._messagesList);
+    });
   }
 
-  getMessages(): Observable<IMessage[]> {
-    return this.messages$;
+  getMessages(): Subject<string | object> {
+    this.websocketService.sendMessage('messages');
+
+    return this.websocketService.subscribeToSocket('messages');
   }
 }

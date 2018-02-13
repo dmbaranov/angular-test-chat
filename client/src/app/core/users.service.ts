@@ -9,7 +9,7 @@ import { WebsocketService } from './websocket.service';
 
 @Injectable()
 export class UsersService {
-  user$: Subject<IUser> = new Subject<IUser>();
+  user$: BehaviorSubject<IUser> = new BehaviorSubject<IUser>(null);
   usersOnline$: Subject<IUser[]> = new Subject<IUser[]>();
 
   constructor(private http: HttpClient, private websocketService: WebsocketService) {}

@@ -1,1 +1,5 @@
-<div *ngFor="let user of users">{{user.username}}</div>
+<div *ngFor="let user of users" class="user">
+  <span class="user-avatar" [ngStyle]="{ background: user.avatar }">{{user.username[0] | uppercase}}</span>
+  {{user.username}}
+  <span *ngIf="user.isAdmin" class="user-admin">admin</span>
+</div>

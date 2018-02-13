@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MessagesService } from '@services/messages.service';
+import { IMessage } from '@models/message.model';
 
 @Component({
   selector: 'app-messages',
@@ -7,16 +8,19 @@ import { MessagesService } from '@services/messages.service';
   styleUrls: ['./messages.component.scss']
 })
 export class MessagesComponent implements OnInit {
+  messages: IMessage[] = [];
+
   constructor(private messageService: MessagesService) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.messageService
+      .getMessages()
+      .subscribe((messages: IMessage[]) => (this.messages = messages));
+  }
 
   sendMessage(msg: string) {
     this.messageService.sendMessage({
-      id: 'id',
-      from: 'from',
-      text: msg,
-      authorIsAdmin: true
+      text: msg
     });
   }
 }

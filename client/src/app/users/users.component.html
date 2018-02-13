@@ -1,3 +1,3 @@
 <app-users-list [users]="usersOnline"></app-users-list>
-<button mat-button (click)="makeLogin()">Login...</button>
-<div>{{currentUser?.username}}</div>
+<button *ngIf="!currentUser" mat-raised-button (click)="makeLogin()" color="primary">Join chat</button>
+<div *ngIf="currentUser" class="current-user">Me: {{currentUser.username}}</div>
